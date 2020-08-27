@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba</title>
+</head>
+<body>
+    <h1><%= title %> </h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io-stream/0.9.1/socket.io-stream.min.js"></script>
+    <canvas height="200" width="350" id="canvas"></canvas>
+    <video id="video" autoplay height="200px"></video>
+</body>
+<script>
+    var socket = io()
+    var canvas = document.getElementById("canvas")
+    var video = document.getElementById("video")
+    var ctx = canvas.getContext("2d")
+    console.log(socket)
+    socket.binaryType = "Blob"
+
+    navigator.mediaDevices.getUserMedia({
+        video: {
+            width: {
+                min: 640,
+                max: 1280
+            },
+            height: {
+                min: 480,
+                max: 720
+            },
+            frameRate: 1
+        },
+        audio: true
+    }).then(stream => {
+        //ss(socket).emit('stream', stream)
+        //stream.pipe(_stream)
+        video.srcObject = stream
+        console.log(video.src)
+        //console.log(stream)
+        //console.log(window.URL.createObjectURL(stream))
+        setInterval(() => {
+            ctx.drawImage(video, 0, 0, 350, 200)
+            socket.emit('stream', canvas.toDataURL())
+        }, 40)
+    })
+</script>
+</html>
